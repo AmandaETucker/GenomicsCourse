@@ -1,0 +1,77 @@
+## Genomics Course Homework Assignment 1
+# Completed 2026 March 30
+# Due 2026 April 2 (before class)
+# Amanda Tucker
+
+# In the terminal, set working directory to the genomics course folder:
+cd '/Users/aet0128/Desktop/Genomics Course'
+
+# Create first layer directories for our project using the mkdir command followed by the filename we want: 
+mkdir data/
+mkdir analysis/
+mkdir scripts/
+
+# Set directory to the new data/ directory and again use mkdir to add sub folders we need:
+mkdir raw/
+mkdir processed/
+
+# Confirm addition of folders using the ls command to list contents of our current directory:
+ls data/
+
+## Set directory back one level to return to project/, then reset directory to analysis/.
+# Once inside analysis/ use mkdir to add sub folders we need here:
+cd ../
+cd analysis/
+mkdir fastqc/
+mkdir bamqc
+
+# Confirm addition of folders using the ls command to list contents of current directory: 
+ls analysis/
+
+## Set directory back one level to return to project/, then reset directory to scripts/:
+# Once inside scripts/ use touch to add a placeholder file:
+cd ../
+cd scripts/
+touch placeholderfile.txt
+
+# Confirm creation of placeholder file using the ls command to list contents of the current directory: 
+ls scripts/
+
+## Set working directory to the fastqc/ file to add a placeholder file there as well. 
+# Repeat this same process to add a placeholder file to the bamqc/ directory, then return to project/ directory:
+cd ../
+cd analysis/
+cd fastqc/
+touch placeholderfile.txt
+ls fastqc/
+
+cd ../
+cd bamqc/
+touch placeholderfile.txt
+ls bamqc/
+
+cd ../
+cd ../
+ls project/
+
+## Set working directory to the raw/ file to add a placeholder file there.
+# Repeat this same process to add a placeholder file to the processed/ directory, then return to the project/ directory: 
+
+cd data/
+cd raw/
+touch placeholder.txt
+ls raw/
+
+cd ../
+cd processed/
+touch placeholder.txt
+ls processed/
+
+cd ../
+cd ../
+ls project/
+
+## Create project_analysis_log.txt in the project/ directory we're currently in, using the touch command. 
+# Open with nano to add directions for what we completed for this assignment so far:
+touch project_analysis_log.txt
+nano project_analysis_log.txt
