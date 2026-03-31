@@ -75,3 +75,17 @@ ls project/
 # Open with nano to add directions for what we completed for this assignment so far:
 touch project_analysis_log.txt
 nano project_analysis_log.txt
+
+-------------------------------------------------------------------------------------
+
+## Initialize a Git Repository in the project directory using Git commands, naming the commit "tucker-GenomicAnalysis-AnalysisReport1": 
+# Check the status to confirm you made the Git Repository.
+git init
+git add .
+git commit -m "tucker-GenomicAnalysis-AnalysisReport1"
+git status
+
+------------------------------------------------------------------------------------
+
+## Create a GitHub Repository Online
+
