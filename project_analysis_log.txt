@@ -1,4 +1,88 @@
 ## Genomics Course Homework Assignment 1
+# Completed 2026 April 12
+# Due 2026 April 13 (before class)
+# Amanda Tucker
+
+### Login to HPC
+## Activate conda environment
+# Set directory to my file 
+
+ssh aet0128@10.119.6.131
+conda activate /data/Reynolds/GenomicAnalysisCourse/conda_envs/course_env
+cd /data/Reynolds/aet0128/
+
+## Make new directory for HW2 files 
+# Copy over all files needed for HW2
+
+makedir HW2/
+cp ../GenomicAnalysisCourse/HW2/hw2.bed .
+cp ../GenomicAnalysisCourse/HW2/hw2.fa .
+cp ../GenomicAnalysisCourse/HW2/v62.0_HO_public.fam .
+
+#### QUESTION 1:
+### Identify columns needed to copy over interval length and score
+## Extract columns with length >500 bp and score >= 100
+# Confirm file generation and number of rows that meet the criteria
+
+head hw2.bed 
+awk 'NR==1 || ($3-$2 > 500 && $5 >= 100 )' hw2.bed> hw2_intervals.bed #NR==1 keeps the column headers then pipes it into the formula to select our columns
+ls hw2_intervals.bed
+wc -l hw2_intervals.bed
+_____________________________________________________________________________
+##### QUESTION 2: 
+#### Identify number of lines in original hw2.fam
+### Extract these IID columns that are duplicates 
+## Remove these duplicates from the hw2.fam file 
+# Confirm file generation and number of rows that meet the criteria
+
+wc -l hw2.fam #output is 1000
+sort -k2,2 hw2.fam | uniq -d > hw2_duplicates.fam #this function sorts by the second column only using the -k2,2, then pipes in into the uniq -d which extracts one copy of the duplicate IDs. I could not find in the powerpoints how to point to the second column within the sort function, so I did ask chat about that part.
+grep -vf hw2_duplicates.fam hw2.fam > hw2_modID.fam #The -v flag point to exclude matches and the -f flag points to use the file that follows as the patter list of things to be excluded. This  followed by our hw2_duplicates.fam document effectively tells it to exclude matches that are in this document. This is followed by the document we want to asses hw2.fam, and then our output file name. 
+ls hw2_modID.fam
+wc -l hw2_modID.fam #output was 853
+__________________________________________________________________________
+### QUESTION 3: 
+## Create a new file containing only the sample names from hw2.fa file, filtering them out into a new file
+# Confirm file generation and number of row remaining that meet the criteria 
+
+grep "^>" hw2.fa > hw2_fasta_names.txt #the ^ flag in grep tells it to scan the start of the line, and the > is the marker for the FASTA headers at the start of the line. we use this in “ “ to point grep to our pattern followed by the file we want to scan, then the output file name.
+ls hw2_fasta_names.txt
+wc -l hw2_fasta_names.txt #output was 4122
+_____________________________________________________________________________
+######## QUESTION 4: 
+####### View headers to determing how FIDs are notated as Russian
+###### Extract these headers to see how many we have 
+##### Count the lines in the file to see how many we have 
+#### Identify unique FIDs from Russia, just printing the first column FID
+### Count the lines to see how many were extracted 
+## Select an FID and save only lines with that FID to an new file
+# Confirm file generation and view header
+
+head v62.0_HO_public.fam
+grep "^Russia" v62.0_HO_public.fam > hw2_russia.txt
+wc -l #output is 981
+awk '{print $1}' hw2_russia.txt | sort -u > hw2_russia_unique.txt #the print $1 gives us just the FID column as output to clean up the noise, and the -u flag here sorts and returns unique values to our output file
+wc -l #output is 319
+awk '$1=="Russia_Afanasievo_sister.I3950.AG"' v62.0_HO_public.fam > v6_Russia_Afanasievo_sister.I3950.AG.fam
+ls v6_Russia_Afanasievo_sister.I3950.AG.fam
+head v6_Russia_Afanasievo_sister.I3950.AG.fam
+
+_____________________________________________________________________________
+##### Move all HW2 files to the HW2 directory we made earlier 
+#### Move all the v6 titled files from this assignment to the HW2 directory
+### Change directory to HW2
+## Confirm all files are moved over 
+# Update log and push to git
+
+mv hw2* HW2/
+mv v6* HW2/
+cd HW2/
+ls
+
+
+
+___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___
+## Genomics Course Homework Assignment 1
 # Completed 2026 March 30
 # Due 2026 April 2 (before class)
 # Amanda Tucker
@@ -87,5 +171,17 @@ git status
 
 ------------------------------------------------------------------------------------
 
-## Create a GitHub Repository Online
+#### Set remote origin for GitHub to our repository for the course
+### Verify remote ssh remote session
+## Test authentication to GitHub (i had to do this to get my push to work; it kept asking me to log in but not accepting my credentials)
+# Push current directory to GitHub Repository 
+git remote add origin https://github.com/AmandaETucker/GenomicsCourse.git
+git remote -v
+ssh -T git@github.com
+git push -u origin main
 
+-----------------------------------------------------------------------------------
+## Copy URL of GitHub repository here for reference 
+# Submit on Canvas assignment to Dr. Reynolds for review for this assignment. Make his whole day.
+
+https://github.com/AmandaETucker/GenomicsCourse
