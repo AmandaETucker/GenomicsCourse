@@ -1,0 +1,135 @@
+##### Log for Genomics Course HW3 Assignment
+#### Spring 2026 with Dr. Austin Reynolds
+### Due 2026 April 21
+## Completed 2026 April 20
+# Amanda Tucker
+------------------------------------------------
+# Set up and move files for assignment
+
+####### Login to HPC
+###### Load Conda Environment
+##### Set Directory
+#### Make HW3 directory 
+### Copy over all fastq.gz files from Dr. Reynolds materials to current directory 
+## Move them to new HW3 directory 
+# Confirm move of all file into new directory 
+
+ssh aet0128@10.119.6.131
+conda activate /data/Reynolds/GenomicAnalysisCourse/conda_envs_course_env
+cd /data/Reynolds/aet0128
+cp ../GenomicAnalysisCourse/HW3/*fastq.gz .
+mv 22* HW3
+cd HW3/
+ls
+
+# Q1: Complete fastqc on HW3 files
+
+###### Write slurm file for fastqc on all files in HW3_fastqc_slurm.sh
+##### Run fast QC
+#### Check for output and error files
+### Exit HPC to download files and assess 
+## Download files to desktop 
+# Make notes on what is wrong with the original fastq files
+
+#SBATCH --job-name=HW3_fastqc
+#SBATCH --output=HW3_fastqc_output.txt
+#SBATCH --error=HW3_fastqc_error.txt
+#SBATCH --partition=cpu
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=4
+#SBATCH --mem=8GB
+#SBATCH --time=00:60:00
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=amandatucker3@my.unthsc.edu
+conda activate /data/Reynolds/GenomicAnalysisCourse/conda_envs/course_env
+cd /data/Reynolds/aet0128/HW3/
+fastqc -t 4 22018FL-04-01-12_S12_L002_R1_001.fastq.gz 22018FL-04-01-12_S12_L002_R2_001.fastq.gz
+fastqc -t 4 22154FL-03-01-01_S1_L003_R1_001.fastq.gz 22154FL-03-01-01_S1_L003_R2_001.fastq.gz
+fastqc -t 4 22018FL-04-01-21_S21_L007_R1_001.fastq.gz 22018FL-04-01-21_S21_L007_R2_001.fastq.gz
+
+sbatch HW3_fastqc_slurm.sh
+ls
+exit
+scp aet0128@10.119.6.131:/data/Reynolds/aet0128/HW3/*txt /Users/aet0128/Desktop/
+
+-------------------------------------------------
+# Q2: Quality control of fastq files
+
+####### Write slurm file for fastp on all files in HW3_fastp_slurm.sh
+###### Run fastp
+##### Write slurm file for fastqc on trimmed files in HW3_fastqc_cleaned_slurm.sh
+#### Run fastqc
+### Exit HPC to download files and assess
+## Download files to desktop
+# Notate analysis, QC steps, and results
+
+#SBATCH --job-name=HW3_fastp
+#SBATCH --output=HW3_fastp_output.txt
+#SBATCH --error=HW3_fastp_error.txt
+#SBATCH --partition=cpu
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=4
+#SBATCH --mem=8GB
+#SBATCH --time=00:60:00
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=amandatucker3@my.unthsc.edu
+conda activate /data/Reynolds/GenomicAnalysisCourse/conda_envs/course_env
+cd /data/Reynolds/aet0128/HW3
+fastp -i 22018FL-04-01-12_S12_L002_R1_001.fastq.gz \
+-I 22018FL-04-01-12_S12_L002_R2_001.fastq.gz \
+-o HW3_file1_r1_trimmed.fastq.gz \
+-O HW3_file1_r2_trimmed.fastq.gz \
+--thread 4
+fastp -i 22018FL-04-01-21_S21_L007_R1_001.fastq.gz \
+-I 22018FL-04-01-21_S21_L007_R2_001.fastq.gz \
+-o HW3_file2_r1_trimmed.fastq.gz \
+-O HW3_file2_r2_trimmed.fastq.gz \
+--thread 4
+fastp -i 22154FL-03-01-01_S1_L003_R1_001.fastq.gz \
+-I 22154FL-03-01-01_S1_L003_R2_001.fastq.gz \
+-o HW3_file3_r1_trimmed.fastq.gz \
+-O HW3_file3_r2_trimmed.fastq.gz \
+--thread 4
+
+sbatch HW3_fastp_slurm.sh
+
+#SBATCH --job-name=HW3_fastqc
+#SBATCH --output=HW3_fastqc_output.txt
+#SBATCH --error=HW3_fastqc_error.txt
+#SBATCH --partition=cpu
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=4
+#SBATCH --mem=8GB
+#SBATCH --time=00:60:00
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=amandatucker3@my.unthsc.edu
+
+conda activate /data/Reynolds/GenomicAnalysisCourse/conda_envs/course_env
+cd /data/Reynolds/aet0128/HW3/
+fastqc -t 4 HW3_file1_r1_trimmed.fastq.gz HW3_file1_r2_trimmed.fastq.gz
+fastqc -t 4 HW3_file2_r1_trimmed.fastq.gz HW3_file2_r2_trimmed.fastq.gz
+fastqc -t 4 HW3_file3_r1_trimmed.fastq.gz HW3_file3_r2_trimmed.fastq.gz
+
+sbatch HW3_fastqc_cleaned_slurm.sh
+
+exit
+
+scp aet0128@10.119.6.131:/data/Reynolds/aet0128/HW3/*zip /Users/aet0128/Desktop/
+ 
+# Both reads for file 1 have flags for per tile sequence quality, per base sequence content, per base GC content, and adapter content. The adapter seems to be the most concerning item due to increased poly g curve at the end of the reads. 
+# Run fastp to clean out adapter reads and run fastqc on the trimmed files. 
+# After doing this, the adapter content flag was removed. These files are now ready for processing. 
+
+# Read 1 for file 2 has flags for per tile sequence quality, per base sequence content, per sequence GC content, and adapter content. The most concerning flag is the adapter content with an increase in poly g at the end of the runs. 
+# Read 2 for file 2 has the same adapter issue, with a worse flag for the per tile sequence quality. Overall, the adapter content seems to be the dominant issue. 
+# Run fastp to clean out the adapter reads and run fastqc on the trimmed files. 
+# After doing this, teh adapter content flag was removed for both files. These files are now ready for processing.
+
+# Read 1 for file 3 has flags for per base sequence quality, per tile sequence quality, per base sequence content, per sequence GC content, sequence duplication levels, overrepresented sequences, and adapter content.
+# Read 2 for file 3 has flags for per base sequence quality, per base sequence content, per sequence GC content, sequence duplication levels, overrepresented sequences, and adapter content. 
+# Run fastp to clean out the adapter reads and run fastqc on the trimmed files.
+# After doing this, the adapter content flag was removed for both files. 
+# Repeated sample prep avoiding overamplification could reduce the sequence duplication levels, and trimming of index and barcodes could improve the base sequence content. Checking the sequencing equipment could improve per tile sequence quality. 
