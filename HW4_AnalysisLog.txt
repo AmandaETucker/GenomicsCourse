@@ -1,0 +1,239 @@
+##### Log for Genomics Course HW3 Assignment
+#### Spring 2026 with Dr. Austin Reynolds
+### Due 2026 April 28
+## Completed 2026 May 3
+# Amanda Tucker
+------------------------------------------------
+# Set up and copy files for assignment
+
+####### Login to HPC
+###### Load Conda Environment
+##### Set Directory
+#### Make HW4 directory 
+### Change directory to HW4
+## Copy example_slurm file to current directory 
+# Confirm move of all file into new directory 
+
+ssh aet0128@10.119.6.131
+conda activate /data/Reynolds/GenomicAnalysisCourse/conda_envs_course_env
+cd /data/Reynolds/aet0128
+mkdir HW4/
+cd HW4/
+cp ../data/Reynolds/aet0128/example_slurm.sh .
+ls
+
+# Q1: Complete alignment on HW3 files
+
+###### Write slurm file for alignment for fileset 1 in HW4_Files1_Alignment_slurm.sh
+##### Write slurm file for alignment for fileset 2 in HW4_Files2_Alignment_slurm.sh
+#### Write slurm file for alignment for fileset 3 in HW4_Files3_Alignment_slurm.sh
+### Submit HW4_Files1_Alignment_slurm.sh to HPC for processing 
+## Submit HW4_Files2_Alignment_slurm.sh to HPC for processing
+# Submit HW4_Files3_Alignment_slurm.sh to HPC for processing
+
+#!/bin/bash
+#SBATCH --job-name=HW4_Files1_alignment
+#SBATCH --output=HW4alignment_output.txt
+#SBATCH --error=HW4alignment_error.txt
+#SBATCH --partition=cpu
+#SBATCH --nodes=16
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=24GB
+#SBATCH --time=24:00:00
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=amandatucker3@unthsc.edu
+
+bwa mem -t 16 /data/Reynolds/GenomicAnalysisCourse/reference/hg38.fa.gz \
+/data/Reynolds/aet0128/HW3/HW3_file1_r1_trimmed.fastq.gz \
+/data/Reynolds/aet0128/HW3/HW3_file1_r2_trimmed.fastq.gz \
+> HW4_Files1_aligned.sam
+
+#!/bin/bash
+#SBATCH --job-name=HW4_Files2_alignment
+#SBATCH --output=HW4alignment_Files2_output.txt
+#SBATCH --error=HW4alignment_Files2_error.txt
+#SBATCH --partition=cpu
+#SBATCH --nodes=16
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=24GB
+#SBATCH --time=24:00:00
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=amandatucker3@unthsc.edu
+
+bwa mem -t 16 /data/Reynolds/GenomicAnalysisCourse/reference/hg38.fa.gz \
+/data/Reynolds/aet0128/HW3/HW3_file2_r1_trimmed.fastq.gz \
+/data/Reynolds/aet0128/HW3/HW3_file2_r2_trimmed.fastq.gz \
+> HW4_Files2_aligned.sam
+
+#!/bin/bash
+#SBATCH --job-name=HW4_Files3_alignment
+#SBATCH --output=HW4alignment_Files3_output.txt
+#SBATCH --error=HW4alignment_Files3_error.txt
+#SBATCH --partition=cpu
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=16
+#SBATCH --mem=24GB
+#SBATCH --time=24:00:00
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=amandatucker3@unthsc.edu
+
+bwa mem -t 16 /data/Reynolds/GenomicAnalysisCourse/reference/hg38.fa.gz \
+/data/Reynolds/aet0128/HW3/HW3_file3_r1_trimmed.fastq.gz \
+/data/Reynolds/aet0128/HW3/HW3_file3_r2_trimmed.fastq.gz \
+> HW4_Files3_aligned.sam
+
+sbatch HW4_Files1_Alignment_slurm.sh
+sbatch HW4_Files2_Alignment_slurm.sh
+sbatch HW4_Files3_Alignment_slurm.sh
+---------------------------------------------------------------------------
+# Q2: Produce quality mapping scores
+
+#### Sort each alignment (HW4_Mapping_slurm.sh) 
+### Create bam file for indexing (HW4_Mapping_slurm.sh)
+## Index each BAM file (HW4_Mapping_slurm.sh)
+## Generate mapping scores and summaries (HW4_QualiMap_slurm.sh)
+# Review and analyze quality reports
+
+#!/bin/bash
+#SBATCH --job-name=HW4_SortingIndexing
+#SBATCH --output=HW4SortingIndexing_output.txt
+#SBATCH --error=HW4SortingIndexing_error.txt
+#SBATCH --partition=cpu
+#SBATCH --nodes=1 
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=16
+#SBATCH --mem=64GB
+#SBATCH --time=24:00:00
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=amandatucker3@unthsc.edu
+
+conda activate /data/Reynolds/GenomicAnalysisCourse/conda_envs/course_env
+
+cd /data/Reynolds/aet0128/HW4/
+
+samtools sort HW4_Files1_aligned.sam -o HW4_Files1_aligned.sorted.sam
+samtools view -b -o HW4_Files1_aligned.sorted.bam HW4_Files1_aligned.sorted.sam
+samtools index HW4_Files1_aligned.sorted.bam
+
+samtools sort HW4_Files2_aligned.sam -o HW4_Files2_aligned.sorted.sam
+samtools view -b -o HW4_Files2_aligned.sorted.bam HW4_Files2_aligned.sorted.sam
+samtools index HW4_Files2_aligned.sorted.bam
+
+samtools sort HW4_Files3_aligned.sam -o HW4_Files3_aligned.sorted.sam
+samtools view -b -o HW4_Files3_aligned.sorted.bam HW4_Files3_aligned.sorted.sam
+samtools index HW4_Files3_aligned.sorted.bam
+
+#!/bin/bash
+#SBATCH --job-name=HW4_QualiMap
+#SBATCH --output=HW4QualiMap_output.txt
+#SBATCH --error=HW4QualiMap_error.txt
+#SBATCH --partition=cpu
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=16
+#SBATCH --mem=64GB
+#SBATCH --time=24:00:00
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=amandatucker3@unthsc.edu
+
+conda activate /data/Reynolds/GenomicAnalysisCourse/conda_envs/course_env
+
+cd /data/Reynolds/aet0128/HW4/
+
+qualimap bamqc --java-mem-size=48G -nt 16 -bam HW4_Files1_aligned.sorted.bam \
+-outdir HW4_Files1_aligned.sorted_qualimap_results
+
+qualimap bamqc --java-mem-size=48G -nt 16 -bam HW4_Files2_aligned.sorted.bam \
+-outdir HW4_Files2_aligned.sorted_qualimap_results
+
+qualimap bamqc --java-mem-size=48G -nt 16 -bam HW4_Files3_aligned.sorted.bam \
+-outdir HW4_Files3_aligned.sorted_qualimap_results
+
+# Files 1 Analysis
+# Files 2 Analysis
+# Files 3 Analysis 
+
+---------------------------------------------
+# Q5: Mark duplicates and repeate qualimap 
+
+### Mark duplicates (HW4_MarkDupsQualiMap_slurm.sh) 
+## Re-run qualimap on all files (HW4_MarkDupsQualiMap_slurm.sh)
+# Review and analyze quality reports
+
+#!/bin/bash
+#SBATCH --job-name=HW4_MarkDupsQualiMap
+#SBATCH --output=HW4MarkDupsQualiMap_output.txt
+#SBATCH --error=HW4MarkDupsQualiMap_error.txt
+#SBATCH --partition=cpu
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=16
+#SBATCH --mem=64GB
+#SBATCH --time=24:00:00
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=amandatucker3@unthsc.edu
+
+conda activate /data/Reynolds/GenomicAnalysisCourse/conda_envs/course_env
+
+cd /data/Reynolds/aet0128/HW4/
+
+picard MarkDuplicates -I HW4_Files1_aligned.sorted.bam \
+-O HW4_Files1_aligned.sorted.markdups.bam \
+-M HW4_Files1_aligned.sorted.markdups_metrics.txt
+
+picard MarkDuplicates -I HW4_Files2_aligned.sorted.bam \
+-O HW4_Files2_aligned.sorted.markdups.bam \
+-M HW4_Files2_aligned.sorted.markdups_metrics.txt
+
+picard MarkDuplicates -I HW4_Files3_aligned.sorted.bam \
+-O HW4_Files3_aligned.sorted.markdups.bam \
+-M HW4_Files3_aligned.sorted.markdups_metrics.txt
+
+qualimap bamqc --java-mem-size=48G -nt 16 -bam HW4_Files1_aligned.sorted.markdups.bam \
+-outdir HW4_Files1_aligned.sorted.markdups_qualimap_results
+
+qualimap bamqc --java-mem-size=48G -nt 16 -bam HW4_Files2_aligned.sorted.markdups.bam \
+-outdir HW4_Files2_aligned.sorted.markdups_qualimap_results
+
+qualimap bamqc --java-mem-size=48G -nt 16 -bam HW4_Files3_aligned.sorted.markdups.bam \
+-outdir HW4_Files3_aligned.sorted.markdups_qualimap_results
+
+# File 1: Portion of samples that are duplicates. How they changed from first qualimap
+# File 2: 
+# File 3: 
+
+--------------------------------------------------------------------------------
+
+Q6: Measure coverage & notate expected quality of variant calling (HW4_Depth_slurm.sh)
+
+### Measure coverage 
+## Explain average coverage of each sample 
+# Explain quality of variant calling you expect
+
+#!/bin/bash
+#SBATCH --job-name=HW4_Depth
+#SBATCH --output=HW4Depth_output.txt
+#SBATCH --error=HW4Depth_error.txt
+#SBATCH --partition=cpu
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=16
+#SBATCH --mem=64GB
+#SBATCH --time=24:00:00
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=amandatucker3@unthsc.edu
+
+conda activate /data/Reynolds/GenomicAnalysisCourse/conda_envs/course_env
+
+cd /data/Reynolds/aet0128/HW4/
+
+mosdepth -t 16 HW4_Files1_aligned.sorted HW4_Files1_aligned.sorted.bam
+mosdepth -t 16 HW4_Files2_aligned.sorted HW4_Files2_aligned.sorted.bam
+mosdepth -t 16 HW4_Files3_aligned.sorted HW4_Files3_aligned.sorted.bam
+
+# File 1: average coverage & expected variant calling 
+# File 2: 
+# File 3: 
